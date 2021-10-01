@@ -1,0 +1,87 @@
+package render
+
+import (
+	"bytes"
+	"fmt"
+	"html/template"
+	"log"
+	"net/http"
+	"path/filepath"
+
+	"github.com/jinyanomura/bookings/pkg/config"
+	"github.com/jinyanomura/bookings/pkg/models"
+)
+
+var functions = template.FuncMap{}
+
+var app *config.AppConfig
+
+// SetNewTemplates sets the config for the template package
+func SetNewTemplates(a *config.AppConfig) {
+	app = a
+}
+
+func SetTemplateData(d *models.TemplateData) *models.TemplateData {
+	return d
+}
+
+// RenderTemplate renders templates using html/template
+func RenderTemplate(w http.ResponseWriter, templ string, d *models.TemplateData) {
+	var c map[string]*template.Template
+
+	if app.UseCache {
+		c = app.TemplateCache
+	} else {
+		c, _ = CreateTemplateCache()
+	}
+
+	t, ok := c[templ]
+	if !ok {
+		log.Fatal("could not get template from template cache")
+	}
+
+	buf := new(bytes.Buffer)
+
+	d = SetTemplateData(d)
+
+	_ = t.Execute(buf, d)
+
+	_, err := buf.WriteTo(w)
+	if err != nil {
+		fmt.Println("error writing template to browser:", err)
+	}
+}
+
+// CreateTemplateCache creates a template cache as a map
+func CreateTemplateCache() (map[string]*template.Template, error) {
+	cache := map[string]*template.Template{}
+
+	pages, err := filepath.Glob("./templates/*.page.html")
+	if err != nil {
+		return cache, err
+	}
+
+	for _, page := range pages {
+		name := filepath.Base(page)
+		ts, err := template.New(name).Funcs(functions).ParseFiles(page)
+		if err != nil {
+			return cache, err
+		}
+
+		matches, err := filepath.Glob("./templates/layout.html")
+		if err != nil {
+			return cache, err
+		}
+
+		if len(matches) > 0 {
+			ts, err = ts.ParseFiles("./templates/layout.html")
+			if err != nil {
+				return cache, err
+			}
+		}
+
+		cache[name] = ts
+	}
+
+	return cache, nil
+}
