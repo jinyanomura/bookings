@@ -35,8 +35,7 @@ func main() {
 	app.TemplateCache = c
 	app.UseCache = false
 
-	repo := handlers.NewRepo(&app)
-	handlers.NewHandler(repo)
+	handlers.NewHandler(&app)
 	render.SetNewTemplates(&app)
 
 	fmt.Println("Starting server on port 8080...")

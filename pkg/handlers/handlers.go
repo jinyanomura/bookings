@@ -14,16 +14,11 @@ type Repository struct {
 
 var Repo *Repository
 
-func NewRepo(a *config.AppConfig) *Repository {
-	return &Repository{
+func NewHandler(a *config.AppConfig) {
+	Repo = &Repository{
 		App: a,
 	}
 }
-
-func NewHandler(r *Repository) {
-	Repo = r
-}
-
 
 func (m *Repository) Home(w http.ResponseWriter, r *http.Request) {
 	remoteIp := m.App.Session.GetString(r.Context(), "remote_ip")

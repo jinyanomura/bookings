@@ -26,7 +26,7 @@ func SetTemplateData(d *models.TemplateData) *models.TemplateData {
 }
 
 // RenderTemplate renders templates using html/template
-func RenderTemplate(w http.ResponseWriter, templ string, d *models.TemplateData) {
+func RenderTemplate(w http.ResponseWriter, tmpl string, d *models.TemplateData) {
 	var c map[string]*template.Template
 
 	if app.UseCache {
@@ -35,7 +35,7 @@ func RenderTemplate(w http.ResponseWriter, templ string, d *models.TemplateData)
 		c, _ = CreateTemplateCache()
 	}
 
-	t, ok := c[templ]
+	t, ok := c[tmpl]
 	if !ok {
 		log.Fatal("could not get template from template cache")
 	}
@@ -68,13 +68,13 @@ func CreateTemplateCache() (map[string]*template.Template, error) {
 			return cache, err
 		}
 
-		matches, err := filepath.Glob("./templates/layout.html")
+		matches, err := filepath.Glob("./templates/*.layout.html")
 		if err != nil {
 			return cache, err
 		}
 
 		if len(matches) > 0 {
-			ts, err = ts.ParseFiles("./templates/layout.html")
+			ts, err = ts.ParseGlob("./templates/*.layout.html")
 			if err != nil {
 				return cache, err
 			}
