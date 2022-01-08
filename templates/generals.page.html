@@ -1,0 +1,75 @@
+{{template "base" .}}
+
+{{define "content"}}
+
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <img src="/static/images/generals-quarters.png" class="img-fluid img-thumbnail mx-auto d-block room-image" alt="Generals-quarters">
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <h1 class="text-center mt-4">General's Quarters</h1>
+                <p>
+                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Nobis culpa quas perspiciatis sed consequuntur quod quibusdam excepturi eum, voluptates non voluptate neque sequi? Aliquam harum laborum, quas magni ad culpa.
+                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Nobis culpa quas perspiciatis sed consequuntur quod quibusdam excepturi eum, voluptates non voluptate neque sequi? Aliquam harum laborum, quas magni ad culpa.
+                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Nobis culpa quas perspiciatis sed consequuntur quod quibusdam excepturi eum, voluptates non voluptate neque sequi? Aliquam harum laborum, quas magni ad culpa.
+                </p>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col text-center">
+                <a href="#!" id="check-availability-button" class="btn btn-success">Check Availability</a>
+            </div>
+        </div>
+    </div>
+
+{{end}}
+
+
+{{define "js"}}
+
+    <script>
+        document.getElementById("check-availability-button").addEventListener('click', function() {
+            let html = `
+                <form id="check-availability-form" action="" method="post" novalidate class="needs-validation">
+                <div class="form-row">
+                    <div class="col">
+                        <div class="row" id="reservation-dates-modal">
+                            <div class="col">
+                                <input disabled required class="form-control" type="text" name="start" id="start" placeholder="Arrival">
+                            </div>
+                            <div class="col">
+                                <input disabled required class="form-control" type="text" name="end" id="end" placeholder="Departure">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </form>
+            `;
+            attention.custom({
+                title: 'Choose your dates',
+                msg: html,
+                willOpen: () => {
+                    const el = document.getElementById("reservation-dates-modal");
+                    const rp = new DateRangePicker(el, {
+                        format: 'yyyy-mm-dd',
+                        showOnFocus: true,
+                        orientation: 'top left'
+                    })
+                },
+                didOpen: () => {
+                    document.getElementById("start").removeAttribute("disabled");
+                    document.getElementById("end").removeAttribute("disabled");
+                },
+                callBack: function(result) {
+                    console.log("called");
+                }
+            });
+        })
+    </script>
+
+{{end}}
