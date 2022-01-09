@@ -198,25 +198,19 @@
                   c.didOpen();
                 }
               },
-              preConfirm: () => {
-                return [
-                    document.getElementById('start').value,
-                    document.getElementById('end').value
-                ]
-              }
             })
 
             if (result) {
               if (result.dismiss !== Swal.DismissReason.cancel) {
                  if (result.value !== "") {
-                    if (c.callback !== undefined) {
-                       c.callback(result);
+                    if (c.callBack !== undefined) {
+                       c.callBack(result);
                     }
                  } else {
-                    c.callback(false);
+                    c.callBack(false);
                  }
               } else {
-                 c.callback(false);
+                 c.callBack(false);
               }
             }
           }
