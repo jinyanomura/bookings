@@ -5,17 +5,21 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/alexedwards/scs/v2"
 	"github.com/jinyanomura/bookings/pkg/config"
 	"github.com/jinyanomura/bookings/pkg/handlers"
+	"github.com/jinyanomura/bookings/pkg/helpers"
 	"github.com/jinyanomura/bookings/pkg/models"
 	"github.com/jinyanomura/bookings/pkg/render"
 )
 
 var app config.AppConfig
 var session *scs.SessionManager
+var infoLog *log.Logger
+var errorLog *log.Logger
 
 func main() {
 	err := run()
@@ -43,6 +47,12 @@ func run() error {
 	//change this to true when in production
 	app.InProduction = false
 
+	infoLog = log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
+	app.InfoLog = infoLog
+
+	errorLog = log.New(os.Stdout, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
+	app.ErrorLog = errorLog
+
 	session = scs.New()
 	session.Lifetime = 24 * time.Hour
 	session.Cookie.Persist = true
@@ -60,6 +70,7 @@ func run() error {
 	app.UseCache = false
 
 	handlers.NewHandler(&app)
+	helpers.NewHelpers(&app)
 	render.SetNewTemplates(&app)
 
 	return nil
