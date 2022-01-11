@@ -18,6 +18,25 @@ var app config.AppConfig
 var session *scs.SessionManager
 
 func main() {
+	err := run()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("Starting server on port 8080...")
+
+	srv := &http.Server {
+		Addr: ":8080",
+		Handler: routes(&app),
+	}
+
+	err = srv.ListenAndServe()
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func run() error {
 	// what am I gonna store in session info
 	gob.Register(models.Reservation{})
 
@@ -43,15 +62,5 @@ func main() {
 	handlers.NewHandler(&app)
 	render.SetNewTemplates(&app)
 
-	fmt.Println("Starting server on port 8080...")
-
-	srv := &http.Server {
-		Addr: ":8080",
-		Handler: routes(&app),
-	}
-
-	err = srv.ListenAndServe()
-	if err != nil {
-		log.Fatal(err)
-	}
+	return nil
 }
