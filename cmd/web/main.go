@@ -10,6 +10,7 @@ import (
 
 	"github.com/alexedwards/scs/v2"
 	"github.com/jinyanomura/bookings/pkg/config"
+	"github.com/jinyanomura/bookings/pkg/driver"
 	"github.com/jinyanomura/bookings/pkg/handlers"
 	"github.com/jinyanomura/bookings/pkg/helpers"
 	"github.com/jinyanomura/bookings/pkg/models"
@@ -22,10 +23,11 @@ var infoLog *log.Logger
 var errorLog *log.Logger
 
 func main() {
-	err := run()
+	db, err := run()
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer db.SQL.Close()
 
 	fmt.Println("Starting server on port 8080...")
 
@@ -40,9 +42,13 @@ func main() {
 	}
 }
 
-func run() error {
+func run() (*driver.DB, error) {
 	// what am I gonna store in session info
 	gob.Register(models.Reservation{})
+	gob.Register(models.User{})
+	gob.Register(models.Room{})
+	gob.Register(models.Restriction{})
+	gob.Register(models.RoomRestriction{})
 
 	//change this to true when in production
 	app.InProduction = false
@@ -61,6 +67,13 @@ func run() error {
 
 	app.Session = session
 
+	// connect to database
+	db, err := driver.ConnectSQL("host=localhost port=5432 dbname=bookings user=jinyanomura password=")
+	if err != nil {
+		log.Fatal("cannot connect to database")
+	}
+	log.Println("Connected to database")
+
 	c, err := render.CreateTemplateCache()
 	if err != nil {
 		log.Fatal("cannot create template cache")
@@ -69,9 +82,9 @@ func run() error {
 	app.TemplateCache = c
 	app.UseCache = false
 
-	handlers.NewHandler(&app)
+	handlers.NewHandler(&app, db)
 	helpers.NewHelpers(&app)
 	render.SetNewTemplates(&app)
 
-	return nil
+	return db, nil
 }

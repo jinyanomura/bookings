@@ -30,8 +30,8 @@ func AddDefaultData(r *http.Request ,td *models.TemplateData) *models.TemplateDa
 	return td
 }
 
-// RenderTemplate renders templates using html/template
-func RenderTemplate(w http.ResponseWriter, r *http.Request, tmpl string, td *models.TemplateData) error {
+// Template renders templates using html/template
+func Template(w http.ResponseWriter, r *http.Request, tmpl string, td *models.TemplateData) error {
 	var c map[string]*template.Template
 
 	if app.UseCache {
