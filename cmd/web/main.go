@@ -82,7 +82,8 @@ func run() (*driver.DB, error) {
 	app.TemplateCache = c
 	app.UseCache = false
 
-	handlers.NewHandler(&app, db)
+	repo := handlers.NewRepo(&app, db)
+	handlers.NewHandlers(repo)
 	helpers.NewHelpers(&app)
 	render.SetNewTemplates(&app)
 
