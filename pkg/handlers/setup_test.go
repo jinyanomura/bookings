@@ -29,6 +29,12 @@ func TestMain(m *testing.M) {
 	// what am I going to put in the session
 	gob.Register(models.Reservation{})
 
+	mailChan := make(chan models.MailData)
+	app.MailChan = mailChan
+	defer close(mailChan)
+
+	listenForMail()
+
 	// change this to true when in production
 	app.InProduction = false
 	
@@ -60,6 +66,14 @@ func TestMain(m *testing.M) {
 	render.SetNewTemplates(&app)
 
 	os.Exit(m.Run())
+}
+
+func listenForMail() {
+	go func() {
+		for {
+			_ = <- app.MailChan
+		}
+	}()
 }
 
 func getRoutes() http.Handler {

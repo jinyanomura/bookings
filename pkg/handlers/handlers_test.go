@@ -117,7 +117,7 @@ func testPostReservation(key string) int {
 		case "room_id": postData.Set("room_id", "invalid")
 		case "form_validation": postData.Set("first_name", "a")
 		case "insert_reservation": postData.Set("room_id", "2")
-		case "insert_restriction": postData.Set("room_id", "1000")
+		case "insert_restriction": postData.Set("start_date", "2222-02-02")
 		}
 		req, _ = http.NewRequest("POST", "/make-reservation", strings.NewReader(postData.Encode()))
 	}
