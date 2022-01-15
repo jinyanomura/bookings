@@ -29,8 +29,12 @@ func main() {
 	}
 	defer db.SQL.Close()
 
-	fmt.Println("Starting server on port 8080...")
+	defer close(app.MailChan)
 
+	fmt.Println("Starting mail listner")
+	listenForMail()
+
+	fmt.Println("Starting server on port 8080...")
 	srv := &http.Server {
 		Addr: ":8080",
 		Handler: routes(&app),
@@ -49,6 +53,9 @@ func run() (*driver.DB, error) {
 	gob.Register(models.Room{})
 	gob.Register(models.Restriction{})
 	gob.Register(models.RoomRestriction{})
+
+	mailChan := make(chan models.MailData)
+	app.MailChan = mailChan
 
 	//change this to true when in production
 	app.InProduction = false
