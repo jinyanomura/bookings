@@ -77,13 +77,13 @@ func run() (*driver.DB, error) {
 	// connect to database
 	db, err := driver.ConnectSQL("host=localhost port=5432 dbname=bookings user=jinyanomura password=")
 	if err != nil {
-		log.Fatal("cannot connect to database")
+		log.Fatal("cannot connect to database", err)
 	}
 	log.Println("Connected to database")
 
 	c, err := render.CreateTemplateCache()
 	if err != nil {
-		log.Fatal("cannot create template cache")
+		log.Fatal("cannot create template cache", err)
 	}
 
 	app.TemplateCache = c
