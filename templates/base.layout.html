@@ -94,61 +94,26 @@
       <script src="https://unpkg.com/notie"></script>
       <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
       <script src="../static/js/app.js"></script>
-      
-      {{block "js" .}}
-      
-      {{end}}
 
       <script>
 
-        let attention = Prompt();
+          {{with .Error}}
+          notify("{{.}}", "error")
+          {{end}}
 
-        (function() {
-          'use strict';
-          window.addEventListener('load', function() {
-            // fetch all the forms we want to apply custom bootstrap validations to
-            let forms = document.getElementsByClassName('needs-validation');
-            // loop over them and prevent submission
-            Array.prototype.filter.call(forms, function(form) {
-              form.addEventListener('submit', function(event) {
-                if (form.checkValidity() === false) {
-                  event.preventDefault();
-                  event.stopPropagation();
-                }
-                form.classList.add('was-validated');
-              }, false);
-            });
-          }, false);
-        })();
+          {{with .Flash}}
+          notify("{{.}}", "success")
+          {{end}}
 
-        function notify(msg, msgType) {
-          notie.alert({
-            type: msgType,
-            text: msg,
-          })
-        }
-
-        function notifyModal(title, text, icon, confirmationButtonText) {
-          Swal.fire({
-            title: title,
-            html: text,
-            icon, icon,
-            confirmationButtonText: confirmationButtonText,
-          })
-        }
-
-        {{with .Error}}
-        notify("{{.}}", "error")
-        {{end}}
-
-        {{with .Flash}}
-        notify("{{.}}", "success")
-        {{end}}
-
-        {{with .Warning}}
-        notify("{{.}}", "warning")
-        {{end}}
+          {{with .Warning}}
+          notify("{{.}}", "warning")
+          {{end}}
+          
       </script>
+
+      {{block "js" .}}
+            
+      {{end}}
 
     </body>
   </html>

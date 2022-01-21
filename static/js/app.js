@@ -1,3 +1,39 @@
+let attention = Prompt();
+
+(function() {
+    'use strict';
+     window.addEventListener('load', function() {
+        // fetch all the forms we want to apply custom bootstrap validations to
+        let forms = document.getElementsByClassName('needs-validation');
+        // loop over them and prevent submission
+        Array.prototype.filter.call(forms, function(form) {
+            form.addEventListener('submit', function(event) {
+                if (form.checkValidity() === false) {
+                  event.preventDefault();
+                  event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+     }, false);
+})();
+
+function notify(msg, msgType) {
+    notie.alert({
+      type: msgType,
+      text: msg,
+    })
+}
+
+function notifyModal(title, text, icon, confirmationButtonText) {
+    Swal.fire({
+       title: title,
+       html: text,
+       icon, icon,
+       confirmationButtonText: confirmationButtonText,
+    })
+}
+
 function Prompt() {
     let toast = function(c) {
       const {
@@ -105,7 +141,7 @@ function Prompt() {
       }
 }
 
-let PromptAvail = function(roomID, csrfToken) {
+function PromptAvail(roomID, csrfToken) {
     document.getElementById("check-availability-button").addEventListener('click', function() {
         let html = `
             <form id="check-availability-form" action="" method="post" novalidate class="needs-validation">
