@@ -15,3 +15,14 @@
   </div>
 
 {{end}}
+
+{{define "js"}}
+
+<script>
+  window.addEventListener("load", () => {
+      let currentPage = window.location.pathname.slice(7);
+      document.getElementById(currentPage).classList.add("bg-gradient-primary");
+  })
+</script>
+
+{{end}}

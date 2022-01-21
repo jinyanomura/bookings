@@ -1,5 +1,9 @@
 {{template "admin" .}}
 
+{{define "css"}}
+  <link href="https://cdn.jsdelivr.net/npm/simple-datatables@latest/dist/style.css" rel="stylesheet" type="text/css">
+{{end}}
+
 {{define "page-title"}}
   New Reservations
 {{end}}
@@ -9,9 +13,60 @@
   <div class="container">
     <div class="row">
       <div class="col">
-        <h1>This is the admin page, only visible for logged in users</h1>
+        
+        {{$res := index .Data "reservations"}}
+
+        <table class="table table-bordered table-hover" id="new-res">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Room</th>
+              <th>Arrival</th>
+              <th>Departure</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {{range $res}}
+
+              <tr>
+                <td>{{.ID}}</td>
+                <td>
+                  <a href="/admin/reservations/new/{{.ID}}">
+                    {{.FirstName}} {{.LastName}}
+                  </a>
+                </td>
+                <td>{{.Room.RoomName}}</td>
+                <td>{{humanDate .StartDate}}</td>
+                <td>{{humanDate .EndDate}}</td>
+              </tr>
+
+            {{end}}
+          </tbody>
+        </table>
+
       </div>
     </div>
   </div>
 
+{{end}}
+
+{{define "js"}}
+  <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" type="text/javascript"></script>
+
+  <script>
+
+    window.addEventListener("load", () => {
+      let currentPage = window.location.pathname.slice(7);
+      document.getElementById(currentPage).classList.add("bg-gradient-primary");
+    })
+
+    document.addEventListener("DOMContentLoaded", function(){
+      const dataTable = new simpleDatatables.DataTable("#new-res", {
+        select: 3, sort: "desc"
+      })
+    })
+
+  </script>
 {{end}}

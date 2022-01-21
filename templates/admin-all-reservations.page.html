@@ -57,6 +57,11 @@
 
   <script>
 
+    window.addEventListener("load", () => {
+       let currentPage = window.location.pathname.slice(7);
+       document.getElementById(currentPage).classList.add("bg-gradient-primary");
+    })
+
     document.addEventListener("DOMContentLoaded", function(){
       const dataTable = new simpleDatatables.DataTable("#all-res", {
         select: 3, sort: "desc"
