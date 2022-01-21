@@ -34,6 +34,11 @@ function notifyModal(title, text, icon, confirmationButtonText) {
     })
 }
 
+function notifyAdmin(target) {
+  let e = new Event('click');
+  document.getElementById(target).dispatchEvent(e);
+}
+
 function Prompt() {
     let toast = function(c) {
       const {

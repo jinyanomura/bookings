@@ -4,30 +4,28 @@
     <html lang="en">
 
     <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <!-- <link rel="apple-touch-icon" sizes="76x76" href="/static/admin">
-    <link rel="icon" type="image/png" href="/static/admin/assets/img/favicon.png"> -->
-    <title>
-        Admin
-    </title>
-    <!--     Fonts and icons     -->
-    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900|Roboto+Slab:400,700" />
-    <!-- Nucleo Icons -->
-    <link href="/static/admin/assets/css/nucleo-icons.css" rel="stylesheet" />
-    <link href="/static/admin/assets/css/nucleo-svg.css" rel="stylesheet" />
-    <!-- Font Awesome Icons -->
-    <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
-    <!-- Material Icons -->
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
-    <!-- CSS Files -->
-    <link id="pagestyle" href="/static/admin/assets/css/material-dashboard.css?v=3.0.0" rel="stylesheet" />
+      <meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+      <title>Admin</title>
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10.15.5/dist/sweetalert2.min.css">
+      <!--     Fonts and icons     -->
+      <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900|Roboto+Slab:400,700" />
+      <!-- Nucleo Icons -->
+      <link href="/static/admin/assets/css/nucleo-icons.css" rel="stylesheet" />
+      <link href="/static/admin/assets/css/nucleo-svg.css" rel="stylesheet" />
+      <!-- Font Awesome Icons -->
+      <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
+      <!-- Material Icons -->
+      <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+      <!-- CSS Files -->
+      <link id="pagestyle" href="/static/admin/assets/css/material-dashboard.css?v=3.0.0" rel="stylesheet" />
 
-    {{block "css" .}}
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10.15.5/dist/sweetalert2.min.css">
 
-    {{end}}
+      {{block "css" .}}
+
+      {{end}}
+
     </head>
 
     <body class="g-sidenav-show  bg-gray-200">
@@ -79,23 +77,79 @@
             </div>
             <div class="sidenav-footer position-absolute w-100 bottom-0 ">
               <div class="mx-3">
-                <a class="btn bg-gradient-primary mt-4 w-100" href="/user/logout" type="button">Log out</a>
+                <a class="btn bg-gradient-primary mt-4 w-100" href="/user/logout" type="button">
+                  <i class="fa fa-user me-sm-1"></i>
+                  <span>log out</span>
+                </a>
               </div>
             </div>
           </aside>
 
           <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg ">
-            <div class="container-fluid py-4">
-              <div class="col-mid-12">
-                  <div class="d-flex justify-content-between align-items-center">
-                      <h4>{{block "page-title" .}}{{end}}</h4>
-                  </div>
+
+            <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 mb-3 shadow-none border-radius-xl" id="navbarBlur" navbar-scroll="true">
+              <div class="container-fluid py-1 px-3">
+                <h3 class="pt-3">{{block "page-title" .}}{{end}}</h3>
+                <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
+                  <div class="ms-md-auto pe-md-3 d-flex align-items-center"></div>
+                  <ul class="navbar-nav  justify-content-end">
+                    <li class="nav-item d-xl-none ps-3 d-flex align-items-center">
+                      <a href="javascript:;" class="nav-link text-body p-0" id="iconNavbarSidenav">
+                        <div class="sidenav-toggler-inner">
+                          <i class="sidenav-toggler-line"></i>
+                          <i class="sidenav-toggler-line"></i>
+                          <i class="sidenav-toggler-line"></i>
+                        </div>
+                      </a>
+                    </li>
+                  </ul>
+                </div>
               </div>
-            </div>
+            </nav>
 
             {{block "content" .}}
 
             {{end}}
+
+            <div class="row">
+                <button id="success" class="btn toast-btn" data-target="successToast" hidden></button>
+                <button id="info" class="btn toast-btn" data-target="infoToast" hidden></button>
+                <button id="warning" class="btn toast-btn" data-target="warningToast" hidden></button>
+                <button id="error" class="btn toast-btn" data-target="dangerToast" hidden></button>
+            </div>
+
+            <div class="position-fixed bottom-1 end-1 z-index-2">
+              
+              <div class="toast fade hide p-2 mt-2 bg-gradient-info" role="alert" aria-live="assertive" id="infoToast" aria-atomic="true">
+                <div class="toast-header bg-transparent border-0">
+                  <i class="material-icons text-white me-2">notifications</i>
+                  <span class="me-auto text-white font-weight-bold">Message</span>
+                  <i class="fas fa-times text-md text-white ms-3 cursor-pointer" data-bs-dismiss="toast" aria-label="Close"></i>
+                </div>
+                <hr class="horizontal light m-0">
+                <div class="toast-body text-white">{{.Flash}}</div>
+              </div>
+
+              <div class="toast fade hide p-2 mt-2 bg-gradient-warning" role="alert" aria-live="assertive" id="warningToast" aria-atomic="true">
+                <div class="toast-header bg-transparent border-0">
+                  <i class="material-icons text-white me-2">travel_explore</i>
+                  <span class="me-auto text-white font-weight-bold">Warning</span>
+                  <i class="fas fa-times text-md text-white ms-3 cursor-pointer" data-bs-dismiss="toast" aria-label="Close"></i>
+                </div>
+                <hr class="horizontal light m-0">
+                <div class="toast-body text-white">{{.Warning}}</div>
+              </div>
+
+              <div class="toast fade hide p-2 mt-2 bg-gradient-danger" role="alert" aria-live="assertive" id="dangerToast" aria-atomic="true">
+                <div class="toast-header bg-transparent border-0">
+                  <i class="material-icons text-white me-2">campaign</i>
+                  <span class="me-auto text-white font-weight-bold">Error</span>
+                  <i class="fas fa-times text-md text-white ms-3 cursor-pointer" data-bs-dismiss="toast" aria-label="Close"></i>
+                </div>
+                <hr class="horizontal light m-0">
+                <div class="toast-body text-white">{{.Error}}</div>
+              </div>
+            </div>
 
             <footer class="footer py-4  ">
                 <div class="container-fluid">
@@ -112,6 +166,28 @@
           <script src="/static/admin/assets/js/plugins/smooth-scrollbar.min.js"></script>
           <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
           <script src="/static/js/app.js"></script>
+
+          <script>
+
+            {{with .Error}}
+              setTimeout(() => {
+                  notifyAdmin("error")
+              }, 0)
+            {{end}}
+
+            {{with .Flash}}
+              setTimeout(() => {
+                  notifyAdmin("info")
+              }, 0)
+            {{end}}
+
+            {{with .Warning}}
+              setTimeout(() => {
+                  notifyAdmin("warning")
+              }, 0)
+            {{end}}
+
+          </script>
 
           {{block "js" .}}
 
