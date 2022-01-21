@@ -7,10 +7,6 @@ import (
 	"github.com/jinyanomura/bookings/pkg/models"
 )
 
-func (m *testDBRepo) AllUsers() bool {
-	return true
-}
-
 // InsertReservation inserts a reservation into the database.
 func (m *testDBRepo) InsertReservation(res models.Reservation) (int, error) {
 	if res.RoomID == 2 {
@@ -58,6 +54,11 @@ func (m *testDBRepo) UpdateUser(u models.User) error {
 	return nil
 }
 
+// UpdateReservation updates reseervation details in the database.
+func (m *testDBRepo) UpdateReservation(r models.Reservation) error {
+	return nil
+}
+
 // Authenticate authenticates users
 func (m *testDBRepo) Authenticate(email, testPassword string) (int, string, error) {
 	return 0, "", nil
@@ -66,4 +67,24 @@ func (m *testDBRepo) Authenticate(email, testPassword string) (int, string, erro
 // AllReservations returns a slice of all reservations
 func (m *testDBRepo) AllReservations() ([]models.Reservation, error) {
 	return []models.Reservation{}, nil
+}
+
+// AllNewReservations returns a slice of all reservations
+func (m *testDBRepo) AllNewReservations() ([]models.Reservation, error) {
+	return []models.Reservation{}, nil
+}
+
+// GetReservationByID returns one reservation specified by ID.
+func (m *testDBRepo) GetReservationByID(id int) (models.Reservation, error) {
+	return models.Reservation{}, nil
+}
+
+// DeleteReservation deletes reservations specified by id.
+func (m *testDBRepo) DeleteReservation(id int) error {
+	return nil
+}
+
+// UpdateProcessedForReservation updates processed property for given reservation.
+func (m *testDBRepo) UpdateProcessedForReservation(id, processed int) error {
+	return nil
 }

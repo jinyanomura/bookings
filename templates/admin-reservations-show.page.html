@@ -1,0 +1,106 @@
+{{template "admin" .}}
+
+{{define "page-title"}}
+  Reservation
+{{end}}
+
+{{define "content"}}
+
+  {{$res := index .Data "reservation"}}
+  {{$src := index .StringMap "src"}}
+
+  <div class="container p-5">
+    <div class="row px-5">
+      <div class="col">
+        <p>
+            <strong>Arrival</strong> : {{humanDate $res.StartDate}} <br>
+            <strong>Departure</strong> : {{humanDate $res.EndDate}} <br>
+            <strong>Room</strong> : {{$res.Room.RoomName}} <br>
+        </p>
+
+        <form action="/admin/reservations/{{$src}}/{{$res.ID}}" method="post" novalidate>
+          <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+
+          <div class="input-group input-group-dynamic my-4 is-filled">
+            <label class="form-label" for="first_name">First Name</label>
+            {{with .Form.Errors.Get "first_name"}}
+                 <label class="text-danger">{{.}}</label>
+            {{end}}
+            <input type="text" id="first_name" class="form-control {{with .Form.Errors.Get "first_name"}}is-invalid {{end}}"
+                    value="{{$res.FirstName}}" name='first_name'
+                    onfocus="focused(this)" onfocusout="defocused(this)" required>
+          </div>
+
+          <div class="input-group input-group-dynamic my-4 is-filled">
+            <label class="form-label" for="last_name">Last Name</label>
+            {{with .Form.Errors.Get "last_name"}}
+                 <label class="text-danger">{{.}}</label>
+            {{end}}
+            <input type="text" id="last_name" class="form-control {{with .Form.Errors.Get "last_name"}}is-invalid {{end}}"
+                    value="{{$res.LastName}}" name='last_name'
+                    onfocus="focused(this)" onfocusout="defocused(this)" required>
+          </div>
+
+          <div class="input-group input-group-dynamic my-4 is-filled">
+            <label class="form-label" for="email">Email</label>
+            {{with .Form.Errors.Get "email"}}
+                 <label class="text-danger">{{.}}</label>
+            {{end}}
+            <input type="email" id="email" class="form-control {{with .Form.Errors.Get "email"}}is-invalid {{end}}"
+                    value="{{$res.Email}}" name='email'
+                    onfocus="focused(this)" onfocusout="defocused(this)" required>
+          </div>
+
+          <div class="input-group input-group-dynamic my-4 is-filled">
+            <label class="form-label" for="phone">Phone</label>
+            {{with .Form.Errors.Get "phone"}}
+                 <label class="text-danger">{{.}}</label>
+            {{end}}
+            <input type="tel" id="phone" class="form-control {{with .Form.Errors.Get "phone"}}is-invalid {{end}}"
+                    value="{{$res.Phone}}" name='phone'
+                    onfocus="focused(this)" onfocusout="defocused(this)" required>
+          </div>
+          
+          <hr>
+          <div class="d-flex justify-content-between">
+            <div>
+              <input type="submit" class="btn btn-primary" value="Save">
+              <a href="/admin/reservations-{{$src}}" class="btn btn-warning">Cancel</a>
+              <a href="#!" class="btn btn-info" onclick="updateRes('{{$res.ID}}', 'process')">Mark as Processed</a>
+            </div>
+  
+            <div>
+              <a href="#!" class="btn btn-danger" onclick="updateRes('{{$res.ID}}', 'delete')">Delete</a>
+            </div>
+          </div>
+
+        </form>
+
+      </div>
+    </div>
+  </div>
+
+{{end}}
+
+{{define "js"}}
+
+{{$src := index .StringMap "src"}}
+
+  <script>
+
+    function updateRes(id, type) {
+      attention.custom({
+        icon: "warning",
+        msg: "Are you sure?",
+        callBack: function(result) {
+          console.log(result);
+          if (result !== false) {
+            window.location.href = `/admin/${type}-reservation/{{$src}}/${id}`;
+          }
+        }
+      })
+    }
+
+  </script>
+
+{{end}}
