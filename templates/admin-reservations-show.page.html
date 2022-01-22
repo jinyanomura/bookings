@@ -20,6 +20,8 @@
 
         <form action="/admin/reservations/{{$src}}/{{$res.ID}}" method="post" novalidate>
           <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+          <input type="hidden" name="year" value="{{index .StringMap "year"}}">
+          <input type="hidden" name="month" value="{{index .StringMap "month"}}">
 
           <div class="input-group input-group-dynamic my-4 is-filled">
             <label class="form-label" for="first_name">First Name</label>
@@ -65,8 +67,15 @@
           <div class="d-flex justify-content-between">
             <div>
               <input type="submit" class="btn btn-primary" value="Save">
-              <a href="/admin/reservations-{{$src}}" class="btn btn-warning">Cancel</a>
-              <a href="#!" class="btn btn-info" onclick="updateRes('{{$res.ID}}', 'process')">Mark as Processed</a>
+              {{if eq $src "cal"}}
+                <a href="#!" class="btn btn-info" onclick="window.history.go(-1)">Cancel</a>
+              {{else}}
+                <a href="/admin/reservations-{{$src}}" class="btn btn-warning">Cancel</a>
+              {{end}}  
+              
+              {{if eq $res.Processed 0}}
+                <a href="#!" class="btn btn-info" onclick="updateRes('{{$res.ID}}', 'process')">Mark as Processed</a>
+              {{end}}
             </div>
   
             <div>
@@ -93,9 +102,8 @@
         icon: "warning",
         msg: "Are you sure?",
         callBack: function(result) {
-          console.log(result);
           if (result !== false) {
-            window.location.href = `/admin/${type}-reservation/{{$src}}/${id}`;
+            window.location.href = `/admin/${type}-reservation/{{$src}}/${id}/do?y={{index .StringMap "year"}}&m={{index .StringMap "month"}}`;
           }
         }
       })

@@ -5,11 +5,103 @@
 {{end}}
 
 {{define "content"}}
+  {{$now := index .Data "now"}}
+  {{$rooms := index .Data "rooms"}}
+  {{$dim := index .IntMap "days_in_month"}}
+  {{$currentMonth := index .StringMap "this_month"}}
+  {{$currentYear := index .StringMap "this_month_year"}}
 
   <div class="container">
     <div class="row">
-      <div class="col">
-        <h1>This is the admin page, only visible for logged in users</h1>
+      <div class="col-md-12">
+
+        <div class="d-flex justify-content-between mt-3">
+
+          <div class="">
+            <a href="/admin/reservations-calendar?y={{index .StringMap "last_month_year"}}&m={{index .StringMap "last_month"}}"
+                class="btn btn-outline-secondary">
+              &lt;&lt;
+           </a>
+          </div>
+
+          <div class="text-center">
+            <h3>{{formatDate $now "January"}} {{formatDate $now "2006"}}</h3>
+          </div>
+
+          <div class="">
+            <a href="/admin/reservations-calendar?y={{index .StringMap "next_month_year"}}&m={{index .StringMap "next_month"}}"
+                class="btn btn-outline-secondary">
+              &gt;&gt;
+           </a>
+          </div>
+
+        </div>
+
+        <form action="/admin/reservations-calendar" method="post">
+          <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+          <input type="hidden" name="m" value="{{$currentMonth}}">
+          <input type="hidden" name="y" value="{{$currentYear}}">
+
+          {{range $rooms}}
+            {{$roomID := .ID}}
+            {{$blocks := index $.Data (printf "block_map_%d" .ID)}}
+            {{$reservations := index $.Data (printf "reservation_map_%d" .ID)}}
+
+            <h4 class="my-3">{{.RoomName}}</h4>
+
+            <div class="table-responsive overflow-auto">
+              <table class="table table-bordered">
+
+                <tr class="table-dark">
+                  {{range $index := iterate $dim}}
+                    <td class="text-center">
+                      {{$index}}
+                    </td>
+                  {{end}}
+                </tr>
+
+                <tr class="table-secondary">
+                  {{range $index := iterate $dim}}
+
+                    <td class="text-center">
+
+                      {{if gt (index $reservations (printf "%s-%s-%d" $currentYear $currentMonth $index)) 0 }}
+
+                        <a href="/admin/reservations/cal/{{index $reservations (printf "%s-%s-%d" $currentYear $currentMonth $index)}}/show?y={{$currentYear}}&m={{$currentMonth}}">
+                          <span class="text-primary">R</span>
+                        </a>
+
+                      {{else}}
+
+                        <input type="checkbox"
+                          {{if gt (index $blocks (printf "%s-%s-%d" $currentYear $currentMonth $index)) 0 }}
+                            checked
+                            name="remove_block_{{$roomID}}_{{printf "%s-%s-%d" $currentYear $currentMonth $index}}"
+                            value="{{index $blocks (printf "%s-%s-%d" $currentYear $currentMonth $index)}}"
+                          {{else}}
+                            name="add_block_{{$roomID}}_{{printf "%s-%s-%d" $currentYear $currentMonth $index}}"
+                            value="1"
+                          {{end}}
+                        >
+
+                      {{end}}
+
+                    </td>
+
+                  {{end}}
+                </tr>
+
+              </table>
+            </div>
+
+          {{end}}
+
+          <hr>
+
+          <input type="submit" class="btn btn-primary" value="Save Changes">
+
+        </form>
+
       </div>
     </div>
   </div>
