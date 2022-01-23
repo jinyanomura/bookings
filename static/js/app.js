@@ -171,7 +171,7 @@ function PromptAvail(roomID, csrfToken) {
                 const el = document.getElementById("reservation-dates-modal");
                 const rp = new DateRangePicker(el, {
                     format: 'yyyy-mm-dd',
-                    midDate: new Date(),
+                    minDate: new Date(),
                     showOnFocus: true,
                     orientation: 'top left'
                 })
