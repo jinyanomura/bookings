@@ -66,7 +66,10 @@ func (m *testDBRepo) UpdateReservation(r models.Reservation) error {
 
 // Authenticate authenticates users
 func (m *testDBRepo) Authenticate(email, testPassword string) (int, string, error) {
-	return 0, "", nil
+	if email == "me@here.com" {
+		return 1, "", nil
+	}
+	return 0, "", errors.New("some error")
 }
 
 // AllReservations returns a slice of all reservations

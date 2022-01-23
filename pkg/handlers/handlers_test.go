@@ -25,6 +25,15 @@ var tests = []struct{
 	{"majors-suite", "/majors-suite", "GET", http.StatusOK},
 	{"search-availability", "/search-availability", "GET", http.StatusOK},
 	{"contact", "/contact", "GET", http.StatusOK},
+	{"non-existent", "/bacon/letace/tomato", "GET", http.StatusNotFound},
+	{"login", "/user/login", "GET", http.StatusOK},
+	{"logout", "/user/logout", "GET", http.StatusOK},
+	{"logout", "/user/logout", "GET", http.StatusOK},
+	{"dashboard", "/admin/dashboard", "GET", http.StatusOK},
+	{"new-res", "/admin/reservations-new", "GET", http.StatusOK},
+	{"all-res", "/admin/reservations-all", "GET", http.StatusOK},
+	{"calendar", "/admin/reservations-calendar", "GET", http.StatusOK},
+	{"show-res", "/admin/reservations/new/1/show", "GET", http.StatusOK},
 }
 
 func TestHandlers(t *testing.T) {
@@ -78,7 +87,7 @@ func TestRepository_Reservation(t *testing.T) {
 	rr = httptest.NewRecorder()
 	handler.ServeHTTP(rr, req)
 
-	if rr.Code != http.StatusTemporaryRedirect {
+	if rr.Code != http.StatusSeeOther {
 		t.Errorf("Reservation handler returned unexpected status code: %d", rr.Code)
 	}
 
@@ -92,7 +101,7 @@ func TestRepository_Reservation(t *testing.T) {
 	reservation.RoomID = 100
 	session.Put(ctx, "reservation", reservation)
 
-	if rr.Code != http.StatusTemporaryRedirect {
+	if rr.Code != http.StatusSeeOther {
 		t.Errorf("Reservation handler returned unexpected status code: %d", rr.Code)
 	}
 }
@@ -140,19 +149,19 @@ func TestRepository_PostReservation(t *testing.T) {
 
 	// test for missing post body
 	code = testPostReservation("missing_body")
-	if code != http.StatusTemporaryRedirect {
+	if code != http.StatusSeeOther {
 		t.Errorf("PostReservation handler returned unexpected status code: %d for missing post-body", code)
 	}
 
 	// test for invalid start_date
 	code = testPostReservation("start_date")
-	if code != http.StatusTemporaryRedirect {
+	if code != http.StatusSeeOther {
 		t.Errorf("PostReservation handler returned unexpected status code: %d for invalid start_date", code)
 	}
 
 	// test for invalid end_date
 	code = testPostReservation("end_date")
-	if code != http.StatusTemporaryRedirect {
+	if code != http.StatusSeeOther {
 		t.Errorf("PostReservation handler returned unexpected status code: %d for invalid end_date", code)
 	}
 
@@ -170,13 +179,13 @@ func TestRepository_PostReservation(t *testing.T) {
 
 	// test for failure for inserting reservation into database
 	code = testPostReservation("insert_reservation")
-	if code != http.StatusTemporaryRedirect {
+	if code != http.StatusSeeOther {
 		t.Errorf("PostReservation handler returned unexpected status code: %d for inserting reservation failure", code)
 	}
 
 	// test for failure for inserting restriction into database
 	code = testPostReservation("insert_restriction")
-	if code != http.StatusTemporaryRedirect {
+	if code != http.StatusSeeOther {
 		t.Errorf("PostReservation handler returned unexpected status code: %d for inserting restriction failure", code)
 	}
 }
@@ -202,6 +211,72 @@ func TestRepository_AvailabilityJSON(t *testing.T) {
 	err := json.Unmarshal([]byte(rr.Body.Bytes()), &j)
 	if err != nil {
 		t.Error("failed to parse json")
+	}
+}
+
+var loginTests = []struct{
+	name string
+	email string
+	expectedStatusCode int
+	expectedHTML string
+	expectedLocation string
+}{
+	{
+		"valid-credentials",
+		"me@here.com",
+		http.StatusSeeOther,
+		"",
+		"/",
+	},
+	{
+		"invalid-credential",
+		"stranger@there.com",
+		http.StatusSeeOther,
+		"",
+		"/user/login",
+	},
+	{
+		"invalid-data",
+		"j",
+		http.StatusOK,
+		`action="/user/login"`,
+		"",
+	},
+}
+
+func TestLogin(t *testing.T) {
+	for _, e := range loginTests {
+		postedData := url.Values{}
+		postedData.Add("email", e.email)
+		postedData.Add("password", "password")
+
+		req, _ := http.NewRequest("POST", "/user/login", strings.NewReader(postedData.Encode()))
+		ctx := getCtx(req)
+		req = req.WithContext(ctx)
+
+		req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+		rr := httptest.NewRecorder()
+
+		handler := http.HandlerFunc(Repo.PostShowLogin)
+		handler.ServeHTTP(rr, req)
+
+		if rr.Code != e.expectedStatusCode {
+			t.Errorf("failed %s: expected code %d, but got %d", e.name, e.expectedStatusCode, rr.Code)
+		}
+
+		if e.expectedLocation != "" {
+			loc, _ := rr.Result().Location()
+			if loc.String() != e.expectedLocation {
+				t.Errorf("failed %s: expected location %s, but got location %s", e.name, e.expectedLocation, loc.String())
+			}
+		}
+
+		if e.expectedHTML != "" {
+			html := rr.Body.String()
+			if !strings.Contains(html, e.expectedHTML) {
+				t.Errorf("failed %s: expected to find %s, but did not", e.name, e.expectedHTML)
+			}
+		}
 	}
 }
 
